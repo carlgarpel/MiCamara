@@ -24,8 +24,24 @@ var app = {
       app.aplicaFiltro('sepia');
     });
 
-   
+   var buttonGallery = document.querySelector('#button-gallery');
+    buttonAction.addEventListener('click', function(){
+    	app.cargarFoto(Camera.PictureSourceType.PHOTOLIBRARY)
+    });
   },
+
+cargarFoto: function(pictureSourceType) {
+	var opciones = {
+		quality:100,
+		sourceType: pictureSourceType,
+		destinationType: Camera.DestinationType.FILE_URI,
+		targetWidth: 300,
+		targetHeight: 300,
+		correctOrientation: true
+	};
+		navigator.camera.getPicture(app.fotoCargada, app.errorAlTomarFoto, opciones);
+	},
+
 
 	tomarFoto: function() {
 	var opciones = {
@@ -33,7 +49,9 @@ var app = {
 		destinationType: Camera.DestinationType.FILE_URI,
 		targetWidth: 300,
 		targetHeight: 300,
-		correctOrientation: true
+		correctOrientation: true,
+		cameraDirection: 1,
+		saveToPhotoAlbum: true 
 	};
 		navigator.camera.getPicture(app.fotoTomada, app.errorAlTomarFoto, opciones);
 	},
@@ -86,4 +104,3 @@ if ('addEventListener' in document) {
 		app.inicio();
 	}, false);
 }
-
