@@ -1,17 +1,19 @@
 var app = {
-	inicio: function() {
-		this.iniciaFastClick();
-		this.iniciaBotones();
-	},
+  inicio: function() {
+    this.iniciaFastClick();
+    this.iniciaBotones();
+  },
 
-	iniciaFastClick: function () {
-		FastClick.attach (document.body);
-	},
+  iniciaFastClick: function () {
+  FastClick.attach(document.body);
+    
+  },
 
-
-	 iniciaBotones: function() {
+  iniciaBotones: function() {
     var buttonAction = document.querySelector('#button-action');
-    buttonAction.addEventListener('click', this.tomarFoto);
+    buttonAction.addEventListener('click', function(){
+      app.cargarFoto(Camera.PictureSourceType.CAMERA);
+    });
 
     var filterButtons = document.querySelectorAll('.button-filter');
     filterButtons[0].addEventListener('click', function(){
@@ -24,83 +26,63 @@ var app = {
       app.aplicaFiltro('sepia');
     });
 
-   var buttonGallery = document.querySelector('#button-gallery');
-    buttonAction.addEventListener('click', function(){
-    	app.cargarFoto(Camera.PictureSourceType.PHOTOLIBRARY)
+    var buttonGallery = document.querySelector('#button-gallery');
+    buttonGallery.addEventListener('click', function(){
+      app.cargarFoto(Camera.PictureSourceType.PHOTOLIBRARY);
     });
   },
 
-cargarFoto: function(pictureSourceType) {
-	var opciones = {
-		quality:100,
-		sourceType: pictureSourceType,
-		destinationType: Camera.DestinationType.FILE_URI,
-		targetWidth: 300,
-		targetHeight: 300,
-		correctOrientation: true
-	};
-		navigator.camera.getPicture(app.fotoCargada, app.errorAlTomarFoto, opciones);
-	},
+  cargarFoto: function(pictureSourceType){
+    var opciones = {	  		
+      quality: 100,
+      sourceType: pictureSourceType,
+      destinationType: Camera.DestinationType.FILE_URI,
+      cameraDirection: 1,
+      targetWidth: 600,
+      targetHeight: 800,
+      correctOrientation: true,
+      saveToPhotoAlbum: true     
+    };
+    navigator.camera.getPicture(app.fotoCargada, app.errorAlCargarFoto, opciones);
+  },
 
+  fotoCargada: function(imageURI) {
+    var img = document.createElement('img');
+    img.onload = function(){
+      app.pintarFoto(img);
+    }
+    img.src = imageURI;
+  },
 
-	tomarFoto: function() {
-	var opciones = {
-		quality:100,
-		destinationType: Camera.DestinationType.FILE_URI,
-		targetWidth: 300,
-		targetHeight: 300,
-		correctOrientation: true,
-		cameraDirection: 1,
-		saveToPhotoAlbum: true 
-	};
-		navigator.camera.getPicture(app.fotoTomada, app.errorAlTomarFoto, opciones);
-	},
+  pintarFoto: function(img) {
+    var canvas = document.querySelector('#foto');
+    var context = canvas.getContext('2d');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    context.drawImage(img, 0, 0, img.width, img.height);
+      var salida= document.querySelector('.header');
+      salida.innerHTML ="Carlos: hombre joven de gran atractivo";
 
-	fotoTomada: function(imageURI) {
-		var img = document.createElement('img');
+  },
 
-		img.onload = function() {
-			app.pintarFoto(img);
-		};
+  errorAlCargarFoto: function(message) {
+    console.log('Fallo al tomar foto o toma cancelada: ' + message);
+  },
 
-		img.src = imageURI;
-	
+  aplicaFiltro: function(filterName) {
+    var canvas = document.querySelector('#foto');
+    var context = canvas.getContext('2d');
+    imageData = context.getImageData(0, 0, canvas.width, canvas.height);
 
-		
-	},
+    effects[filterName](imageData.data);
 
-	pintarFoto: function (img) {
-	
-
-		var c = document.querySelector('#foto');
-		var ctex = c.getContext('2d');
-		c.height = img.height;
-		c.width = img.width;
-		ctex.drawImage(img, 0, 0, img.width, img.height);
-			var salida= document.querySelector('.header');
-			salida.innerHTML ="Carlos: hombre joven de gran atractivo";
-
-	},
-
-	errorAlTomarFoto: function(message){
-	console.log ("Fallo al tomar foto o toma cancelada: " + message);
-	},
-
- 	aplicaFiltro: function(filterName) {
-    	var canvas = document.querySelector('#foto');
-    	var context = canvas.getContext('2d');
-    	imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-
-    	effects[filterName](imageData.data);
-
-    	context.putImageData(imageData, 0, 0);
-  }
+    context.putImageData(imageData, 0, 0);
+  },  
 };
 
 var imageData;
-
 if ('addEventListener' in document) {
-	document.addEventListener('DOMContentLoaded', function() {
-		app.inicio();
-	}, false);
+  document.addEventListener('DOMContentLoaded', function() {
+    app.inicio();
+  }, false);
 }
