@@ -9,9 +9,10 @@
     </author>
     <content src="index.html" />
     <access origin="*" />
-    <preference name="permissions" value="CAMERA"/>
+    <preference name="permissions" value="none"/>
 
     <!-- to enable individual permissions use the following examples -->
    
     <feature name="http://api.phonegap.com/1.0/camera"/>
+    <gap:plugin name="org.apache.cordova.camera" version="0.2.4" />
 </widget>
